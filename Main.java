@@ -1,30 +1,31 @@
 package encryptdecrypt;
 
+import java.util.Scanner;
+
 public class Main {
+    final static Scanner scanner = new Scanner(System.in);
+
     public static void main(String[] args) {
-        String sentence = "we found a treasure!";
-        simpleEncrypt(sentence);
+        String sentence = scanner.nextLine();
+        int encryptDiff = scanner.nextInt();
+
+        simpleEncrypt(sentence, encryptDiff);
     }
 
-    public static void simpleEncrypt(String toEncrypt) {
+    public static void simpleEncrypt(String toEncrypt, int encryptDiff) {
         char[] toEncryptArray;
-        int increase, decrease;
         toEncryptArray = toEncrypt.toLowerCase().toCharArray();
 
         for (int i = 0; i < toEncryptArray.length; i++) {
-            if (toEncryptArray[i] < 111 && toEncryptArray[i] > 96) {
-                increase = 97 + (122 - toEncryptArray[i]);
-                toEncryptArray[i] = (char) increase;
-                System.out.printf("%c", toEncryptArray[i]);
+            if (toEncryptArray[i] < 123 && toEncryptArray[i] > 96) {
+                for (int j = 1; j <= encryptDiff; j++) {
+                    toEncryptArray[i] += 1;
+                    if (toEncryptArray[i] > 122) {
+                        toEncryptArray[i] = 97;
+                    }
+                }
             }
-            else if (toEncryptArray[i] > 110 && toEncryptArray[i] < 123) {
-                decrease = 122 - (toEncryptArray[i] - 97);
-                toEncryptArray[i] = (char) decrease;
-                System.out.printf("%c", toEncryptArray[i]);
-            }
-            else {
-                System.out.printf("%c", toEncryptArray[i]);
-            }
+            System.out.printf("%c", toEncryptArray[i]);
         }
     }
 }

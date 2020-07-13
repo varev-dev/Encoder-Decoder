@@ -6,26 +6,52 @@ public class Main {
     final static Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-        String sentence = scanner.nextLine();
-        int encryptDiff = scanner.nextInt();
-
-        simpleEncrypt(sentence, encryptDiff);
+        insertCommand();
     }
+
+    public static void insertCommand() {
+        String actionType = scanner.nextLine();
+
+        if (actionType.equals("enc") || actionType.equals("dec")) {
+            String sentence = scanner.nextLine();
+            int diff = scanner.nextInt();
+
+            if (actionType.equals("enc")) {
+                simpleEncrypt(sentence, diff);
+            } else if (actionType.equals("dec")) {
+                simpleDecrypt(sentence, diff);
+            }
+        }
+    }
+
 
     public static void simpleEncrypt(String toEncrypt, int encryptDiff) {
         char[] toEncryptArray;
-        toEncryptArray = toEncrypt.toLowerCase().toCharArray();
+        toEncryptArray = toEncrypt.toCharArray();
 
         for (int i = 0; i < toEncryptArray.length; i++) {
-            if (toEncryptArray[i] < 123 && toEncryptArray[i] > 96) {
-                for (int j = 1; j <= encryptDiff; j++) {
+            for (int j = 1; j <= encryptDiff; j++) {
                     toEncryptArray[i] += 1;
-                    if (toEncryptArray[i] > 122) {
-                        toEncryptArray[i] = 97;
+                    if (toEncryptArray[i] > 126) {
+                        toEncryptArray[i] = 32;
                     }
                 }
-            }
             System.out.printf("%c", toEncryptArray[i]);
+        }
+    }
+
+    public static void simpleDecrypt(String toDecrypt, int decryptDiff) {
+        char[] toDecryptArray;
+        toDecryptArray = toDecrypt.toCharArray();
+
+        for (int i = 0; i < toDecryptArray.length; i++) {
+            for (int j = 1; j <= decryptDiff; j++) {
+                toDecryptArray[i] -= 1;
+                if (toDecryptArray[i] < 32) {
+                    toDecryptArray[i] = 126;
+                }
+            }
+            System.out.printf("%c", toDecryptArray[i]);
         }
     }
 }

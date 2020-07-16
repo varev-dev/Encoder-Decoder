@@ -1,29 +1,30 @@
 package encryptdecrypt;
 
-import java.util.Scanner;
-
 public class Main {
-    final static Scanner scanner = new Scanner(System.in);
-
     public static void main(String[] args) {
-        insertCommand();
-    }
+        String mode = "enc";
+        int key = 0;
+        String data = "";
 
-    public static void insertCommand() {
-        String actionType = scanner.nextLine();
-
-        if (actionType.equals("enc") || actionType.equals("dec")) {
-            String sentence = scanner.nextLine();
-            int diff = scanner.nextInt();
-
-            if (actionType.equals("enc")) {
-                simpleEncrypt(sentence, diff);
-            } else if (actionType.equals("dec")) {
-                simpleDecrypt(sentence, diff);
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].equals("-mode")) {
+                mode = args[i + 1];
+            } else if (args[i].equals("-key")) {
+                key = Integer.parseInt(args[i + 1]);
+            } else if (args[i].equals("-data")) {
+                data = args[i + 1];
             }
         }
-    }
 
+        switch (mode) {
+            case "dec":
+                simpleDecrypt(data, key);
+                break;
+            case "enc":
+                simpleEncrypt(data, key);
+                break;
+        }
+    }
 
     public static void simpleEncrypt(String toEncrypt, int encryptDiff) {
         char[] toEncryptArray;
@@ -31,11 +32,11 @@ public class Main {
 
         for (int i = 0; i < toEncryptArray.length; i++) {
             for (int j = 1; j <= encryptDiff; j++) {
-                    toEncryptArray[i] += 1;
-                    if (toEncryptArray[i] > 126) {
-                        toEncryptArray[i] = 32;
-                    }
+                toEncryptArray[i] += 1;
+                if (toEncryptArray[i] > 126) {
+                    toEncryptArray[i] = 32;
                 }
+            }
             System.out.printf("%c", toEncryptArray[i]);
         }
     }

@@ -11,6 +11,8 @@ public class Main {
 
     public static void main(String[] args) {
         String data = "";
+        String algorithmType = "shift";
+
         for (int i = 0; i < args.length; i++) {
             switch (args[i]) {
                 case "-mode":
@@ -28,7 +30,7 @@ public class Main {
                             try {
                                 data = new String(Files.readAllBytes(Paths.get(inputFile)));
                             } catch (IOException e) {
-                                System.out.println("Error1");
+                                System.out.println("Error4");
                             }
                         }
                     }
@@ -43,36 +45,61 @@ public class Main {
                         System.out.println("Error2");
                     }
                     break;
+                case "-alg":
+                    algorithmType = args[++i];
+                    break;
             }
         }
 
         String result = "";
         switch (mode) {
             case "enc":
-                encrypt(data, key, result);
+                encrypt(data, key, result, algorithmType);
                 break;
             case "dec":
-                decrypt(data, key, result);
+                decrypt(data, key, result, algorithmType);
                 break;
             default:
                 System.out.println("Error3");
         }
     }
 
-    public static void encrypt(String data, int key, String result) {
+    public static void encrypt(String data, int key, String result, String algorithmType) {
         if (data.toCharArray().length != 0) {
             char[] toEncryptArray;
             toEncryptArray = data.toCharArray();
 
             StringBuilder resultBuilder = new StringBuilder(result);
-            for (int i = 0; i < toEncryptArray.length; i++) {
-                for (int j = 1; j <= key; j++) {
-                    toEncryptArray[i] += 1;
-                    if (toEncryptArray[i] > 126) {
-                        toEncryptArray[i] = 32;
+
+            if (algorithmType.equals("unicode")) {
+                for (int i = 0; i < toEncryptArray.length; i++) {
+                    for (int j = 1; j <= key; j++) {
+                        toEncryptArray[i] += 1;
+                        if (toEncryptArray[i] > 126) {
+                            toEncryptArray[i] = 32;
+                        }
                     }
+                    resultBuilder.append(toEncryptArray[i]);
                 }
-                resultBuilder.append(toEncryptArray[i]);
+            } else {
+                for (int i = 0; i < toEncryptArray.length; i++) {
+                    if (toEncryptArray[i] >= 65 && toEncryptArray[i] <= 90) {
+                        for (int j = 1; j <= key; j++) {
+                            toEncryptArray[i] += 1;
+                            if (toEncryptArray[i] > 90) {
+                                toEncryptArray[i] = 65;
+                            }
+                        }
+                    } else if (toEncryptArray[i] >= 97 && toEncryptArray[i] <= 122) {
+                        for (int j = 1; j <= key; j++) {
+                            toEncryptArray[i] += 1;
+                            if (toEncryptArray[i] > 122) {
+                                toEncryptArray[i] = 97;
+                            }
+                        }
+                    }
+                    resultBuilder.append(toEncryptArray[i]);
+                }
             }
             result = resultBuilder.toString();
 
@@ -80,23 +107,47 @@ public class Main {
         }
     }
 
-    public static void decrypt(String data, int key, String result) {
-        char[] toDecryptArray;
-        toDecryptArray = data.toCharArray();
+    public static void decrypt(String data, int key, String result, String algorithmType) {
+        if (data.toCharArray().length != 0) {
+            char[] toDecryptArray;
+            toDecryptArray = data.toCharArray();
 
-        StringBuilder resultBuilder = new StringBuilder(result);
-        for (int i = 0; i < toDecryptArray.length; i++) {
-            for (int j = 1; j <= key; j++) {
-                toDecryptArray[i] -= 1;
-                if (toDecryptArray[i] < 32) {
-                    toDecryptArray[i] = 126;
+            StringBuilder resultBuilder = new StringBuilder(result);
+
+            if (algorithmType.equals("unicode")) {
+                for (int i = 0; i < toDecryptArray.length; i++) {
+                    for (int j = 1; j <= key; j++) {
+                        toDecryptArray[i] -= 1;
+                        if (toDecryptArray[i] < 32) {
+                            toDecryptArray[i] = 126;
+                        }
+                    }
+                    resultBuilder.append(toDecryptArray[i]);
+                }
+            } else {
+                for (int i = 0; i < toDecryptArray.length; i++) {
+                    if (toDecryptArray[i] >= 65 && toDecryptArray[i] <= 90) {
+                        for (int j = 1; j <= key; j++) {
+                            toDecryptArray[i] -= 1;
+                            if (toDecryptArray[i] < 65) {
+                                toDecryptArray[i] = 90;
+                            }
+                        }
+                    } else if (toDecryptArray[i] >= 97 && toDecryptArray[i] <= 122) {
+                        for (int j = 1; j <= key; j++) {
+                            toDecryptArray[i] -= 1;
+                            if (toDecryptArray[i] < 97) {
+                                toDecryptArray[i] = 122;
+                            }
+                        }
+                    }
+                    resultBuilder.append(toDecryptArray[i]);
                 }
             }
-            resultBuilder.append(toDecryptArray[i]);
-        }
-        result = resultBuilder.toString();
+            result = resultBuilder.toString();
 
-        overwriteFiles(result, outputFile);
+            overwriteFiles(result, outputFile);
+        }
     }
 
 
@@ -107,7 +158,7 @@ public class Main {
             try {
                 File file = new File(outputFile);
                 if (!file.createNewFile()) {
-                    System.out.println("Error4");
+                    System.out.println("");
                 }
                 FileWriter writer = new FileWriter(file);
                 writer.write(result);
